@@ -159,7 +159,7 @@ body {
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":38981744,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":39068288,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
 const GODOT_THREADS_ENABLED = false;
 
 (function () {
@@ -191,7 +191,7 @@ const GODOT_THREADS_ENABLED = false;
 	const pack = GODOT_CONFIG['mainPack'] || exe + '.pck';
 	// the game's data under a new address after every build (build_web.py writes its hash here), so a browser
 	// never mixes a fresh page with a cached old .pck
-	const packUrl = pack + '?v=0e4bc89c7e';
+	const packUrl = pack + '?v=98b458722b';
 	if (GODOT_CONFIG['fileSizes']) {
 		GODOT_CONFIG['fileSizes'][packUrl] = GODOT_CONFIG['fileSizes'][pack];
 	}
@@ -246,6 +246,23 @@ const GODOT_THREADS_ENABLED = false;
 		}
 	}
 	window.mmGameReady = ready;
+
+	// notch / Dynamic Island / rounded corners / home bar (viewport-fit=cover draws under them): the game keeps its
+	// buttons and HUD inside these insets. "left,right,top,bottom,page width,page height" in CSS px.
+	window.mmSafeArea = function () {
+		let probe = document.getElementById('mm-safe');
+		if (!probe) {
+			probe = document.createElement('div');
+			probe.id = 'mm-safe';
+			probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;'
+				+ 'padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);'
+				+ 'padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)';
+			document.body.appendChild(probe);
+		}
+		const cs = getComputedStyle(probe);
+		return [cs.paddingLeft, cs.paddingRight, cs.paddingTop, cs.paddingBottom].map((v) => parseFloat(v) || 0)
+			.concat([window.innerWidth, window.innerHeight]).join(',');
+	};
 
 	function go() {
 		if (started) {
